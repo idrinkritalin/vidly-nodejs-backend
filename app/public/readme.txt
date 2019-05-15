@@ -1,0 +1,1 @@
+Please use /api/ route to fetch the data
