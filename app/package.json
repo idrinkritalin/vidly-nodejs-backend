@@ -4,7 +4,9 @@
   "description": "Backend Node.js server with Express and MongoDB",
   "main": "app.js",
   "scripts": {
-    "start": "nodemon app.js",
+    "start": "concurrently --kill-others \"npm run database\" \"npm run server\"",
+    "server": "nodemon app.js",
+    "database": "mongod",
     "linter": "./node_modules/.bin/eslint '*.*'"
   },
   "repository": {
@@ -23,10 +25,12 @@
     "express": "^4.16.4",
     "helmet": "^3.18.0",
     "joi": "^14.3.1",
+    "mongoose": "^5.5.8",
     "morgan": "^1.9.1",
     "nodemon": "^1.19.0"
   },
   "devDependencies": {
+    "concurrently": "^4.1.0",
     "eslint": "^5.16.0",
     "eslint-config-standard": "^12.0.0",
     "eslint-plugin-import": "^2.17.2",

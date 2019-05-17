@@ -1,3 +1,4 @@
 {
-  "name": "VIDLY - Production"
+  "name": "VIDLY - Production",
+  "dbName": "mongodb://sandboxidr-cstqg.mongodb.net/vidly"
 }

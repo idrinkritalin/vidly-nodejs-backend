@@ -3,13 +3,20 @@ const debug = require('debug')('app:startup')
 const morgan = require('morgan')
 const helmet = require('helmet')
 const logger = require('./helpers/logger')
+const mongoose = require('mongoose')
 const express = require('express')
 const app = express()
+
+// DB
+const dbName = config.get('dbName')
+mongoose.connect(dbName, { useNewUrlParser: true })
+  .then(() => console.log('Connected to MongoDB'))
+  .catch(err => console.error('Error connecting the Database', err))
 
 // ROUTES
 const genres = require('./routes/genres')
 
-// START - REMEMBER TO SET FROM SERVER SIDE process.env.DEBUG=app:*
+// REMEMBER TO SET FROM SERVER SIDE process.env.DEBUG=app:*
 process.env.DEBUG = 'app:*'
 // END
 

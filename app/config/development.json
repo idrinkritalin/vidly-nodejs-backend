@@ -1,3 +1,4 @@
 {
-  "name": "VIDLY - Dev"
+  "name": "VIDLY - Dev",
+  "dbName": "mongodb://localhost/vidly"
 }
