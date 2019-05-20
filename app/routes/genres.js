@@ -5,7 +5,7 @@ const validate = require('../helpers/dataValidation')
 
 // GET
 router.get('/', async (req, res) => {
-  const result = await genres.get()
+  const result = await genres.get(req.query.sortBy)
   res.send(result)
 })
 
@@ -48,7 +48,8 @@ router.put('/:id', async (req, res) => {
 
   // 200 OK Request
   genres.update(req.params.id, req.body)
-  const updatedGenre = data.find(c => c.id === parseInt(req.params.id))
+  const updatedData = await genres.get()
+  const updatedGenre = updatedData.find(c => c.id === parseInt(req.params.id))
   res.send(updatedGenre)
 })
 

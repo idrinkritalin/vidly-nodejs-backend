@@ -8,10 +8,10 @@ const genreSchema = new mongoose.Schema({
 
 const Genre = new mongoose.model('Genre', genreSchema)
 
-const get = async () => {
+const get = async (sortBy = 'id') => {
   const genres = await Genre
     .find()
-    .sort({ id: 1 })
+    .sort({ [`${sortBy}`]: 1 })
   return genres
 }
 
@@ -22,7 +22,7 @@ const create = async (payload) => {
 }
 
 const update = async (id, payload) => {
-  const genre = Genre.updateOne(
+  const genre = await Genre.update(
     { 'id': id },
     { $set: payload },
     { returnNewDocument: true,
@@ -32,7 +32,7 @@ const update = async (id, payload) => {
 }
 
 const del = async (id) => {
-  const genre = Genre.deleteOne({ 'id': id })
+  const genre = await Genre.deleteOne({ 'id': id })
   return genre
 }
 
