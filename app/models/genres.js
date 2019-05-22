@@ -45,7 +45,6 @@ const update = async (id, payload) => {
 
 const del = async (id) => {
   const genre = await Genre.findOneAndDelete({ 'id': id })
-  console.error(genre)
   return genre
 }
 
