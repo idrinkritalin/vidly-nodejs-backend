@@ -1,12 +1,20 @@
 const mongoose = require('mongoose')
 
 const genreSchema = new mongoose.Schema({
-  id: Number,
-  name: String,
+  id: {
+    type: Number,
+    required: true
+  },
+  name: {
+    type: String,
+    minlength: 5,
+    maxlength: 30,
+    required: true
+  },
   isRated: Boolean
 })
 
-const Genre = new mongoose.model('Genre', genreSchema)
+const Genre = mongoose.model('Genre', genreSchema)
 
 const get = async (sortBy = 'id') => {
   const genres = await Genre
@@ -17,22 +25,27 @@ const get = async (sortBy = 'id') => {
 
 const create = async (payload) => {
   const genre = new Genre(payload)
-  const result = await genre.save()
-  return result
+
+  try {
+    const result = await genre.save()
+    return result
+  } catch (ex) {
+    return ex.message
+  }
 }
 
 const update = async (id, payload) => {
-  const genre = await Genre.update(
+  const genre = await Genre.findOneAndUpdate(
     { 'id': id },
     { $set: payload },
-    { returnNewDocument: true,
-      upsert: true }
+    { new: true }
   )
   return genre
 }
 
 const del = async (id) => {
-  const genre = await Genre.deleteOne({ 'id': id })
+  const genre = await Genre.findOneAndDelete({ 'id': id })
+  console.error(genre)
   return genre
 }
 

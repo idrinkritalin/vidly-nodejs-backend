@@ -5,64 +5,50 @@ const validate = require('../helpers/dataValidation')
 
 // GET
 router.get('/', async (req, res) => {
-  const result = await genres.get(req.query.sortBy)
-  res.send(result)
+  const request = await genres.get(req.query.sortBy)
+  res.send(request)
 })
 
 router.get('/:id', async (req, res) => {
-  const result = await genres.get()
-  const genre = result.find(c => c.id === parseInt(req.params.id))
+  const request = await genres.get()
+  const genre = request.find(c => c.id === parseInt(req.params.id))
   if (!genre) return res.status(404).send('The genre with given ID was not found')
   res.send(genre)
 })
 
 // POST
 router.post('/', async (req, res) => {
-  const result = validate.genre(req.body)
+  const request = validate.genre(req.body)
+  if (request.error !== null) return res.status(400).send(request.error.details[0].message)
 
-  // 400 Bad Request
-  if (result.error !== null) return res.status(400).send(result.error.details[0].message)
-
-  // 200 OK Request
   const data = await genres.get()
-  const lastItem = data[data.length - 1]
+  const lastItem = data.length !== 0 ? data[data.length - 1] : null
   const genre = {
-    id: lastItem.id + 1,
+    id: lastItem === null ? 1 : lastItem.id + 1,
     name: req.body.name,
     isRated: req.body.isRated
   }
-  genres.create(genre)
-  res.send(genre)
+  const result = await genres.create(genre)
+  res.send(result)
 })
 
 // PUT
 router.put('/:id', async (req, res) => {
-  const data = await genres.get()
-  const genre = data.find(c => c.id === parseInt(req.params.id))
+  const request = validate.genre(req.body)
+  if (request.error !== null) return res.status(400).send(request.error.details[0].message)
+
+  const genre = await genres.update(req.params.id, req.body)
   if (!genre) return res.status(404).send('The genre with given ID was not found')
 
-  const result = validate.genre(req.body)
-
-  // 400 Bad Request
-  if (result.error !== null) return res.status(400).send(result.error.details[0].message)
-
-  // 200 OK Request
-  genres.update(req.params.id, req.body)
-  const updatedData = await genres.get()
-  const updatedGenre = updatedData.find(c => c.id === parseInt(req.params.id))
-  res.send(updatedGenre)
+  res.send(genre)
 })
 
 // DELETE
 router.delete('/:id', async (req, res) => {
-  const data = await genres.get()
-  const genre = data.find(c => c.id === parseInt(req.params.id))
+  const genre = await genres.del(req.params.id)
   if (!genre) return res.status(404).send('The genre with given ID was not found')
 
-  // 200 OK Request
-  genres.del(req.params.id)
-  const updatedGenre = data.find(c => c.id === parseInt(req.params.id))
-  res.send(updatedGenre)
+  res.send(genre)
 })
 
 module.exports = router
