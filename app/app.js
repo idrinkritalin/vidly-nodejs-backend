@@ -16,6 +16,8 @@ mongoose.connect(dbName, { useNewUrlParser: true })
 // ROUTES
 const genres = require('./routes/genres')
 const customers = require('./routes/customers')
+const movies = require('./routes/movies')
+const rentals = require('./routes/rentals')
 
 // REMEMBER TO SET FROM SERVER SIDE process.env.DEBUG=app:*
 process.env.DEBUG = 'app:*'
@@ -43,5 +45,7 @@ app.get('/', (req, res) => {
 // ROUTER
 app.use('/api/genres', genres)
 app.use('/api/customers', customers)
+app.use('/api/movies', movies)
+app.use('/api/rentals', rentals)
 
 app.listen(PORT, () => debug(`Listening on port ${PORT}...`))

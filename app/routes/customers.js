@@ -11,8 +11,7 @@ router.get('/', async (req, res) => {
 
 router.get('/:id', async (req, res) => {
   const customer = await customers.getOne(req.params.id)
-  if (!customer) return res.status(404).send('The customer with given ID was not found')
-  res.send(customer)
+  customer.error ? res.status(400).send(customer.message) : res.send(customer)
 })
 
 // POST
@@ -22,22 +21,21 @@ router.post('/', async (req, res) => {
 
   const customer = {
     name: req.body.name,
-    isGold: req.body.isGold,
-    phone: req.body.phone
+    phone: req.body.phone,
+    isGold: req.body.isGold
   }
+
   const result = await customers.create(customer)
   res.send(result)
 })
 
 // PUT
 router.put('/:id', async (req, res) => {
-  const request = validate.customer(req.body)
+  const request = validate.updateCustomer(req.body)
   if (request.error !== null) return res.status(400).send(request.error.details[0].message)
 
-  const customer = await customers.update(req.params.id, req.body)
-  if (!customer) return res.status(404).send('The customer with given ID was not found')
-
-  res.send(customer)
+  const result = await customers.update(req.params.id, req.body)
+  result.error ? res.status(400).send(result.message) : res.send(result)
 })
 
 // DELETE
