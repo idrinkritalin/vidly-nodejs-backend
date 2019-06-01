@@ -1,4 +1,5 @@
 const Joi = require('joi')
+Joi.objectId = require('joi-objectid')(Joi)
 
 // REQUEST GENRE
 function genre (genre) {
@@ -40,7 +41,7 @@ function updateCustomer (customer) {
 function movie (movie) {
   const schema = {
     title: Joi.string().min(4).max(30).required(),
-    genre: Joi.string().required(),
+    genre: Joi.objectId().required(),
     numberInStock: Joi.number(),
     dailyRentalRate: Joi.number()
   }
@@ -50,7 +51,7 @@ function movie (movie) {
 function updateMovie (movie) {
   const schema = {
     title: Joi.string().min(4).max(30),
-    genre: Joi.string(),
+    genre: Joi.objectId(),
     numberInStock: Joi.number(),
     dailyRentalRate: Joi.number()
   }
@@ -60,10 +61,31 @@ function updateMovie (movie) {
 // REQUEST RENTAL
 function rental (rental) {
   const schema = {
-    customer: Joi.string().required(),
-    movie: Joi.string().required()
+    customer: Joi.objectId().required(),
+    movie: Joi.objectId().required()
   }
   return Joi.validate(rental, schema)
+}
+
+// REQUEST USER
+function user (user) {
+  const schema = {
+    name: Joi.string().min(5).max(35).required(),
+    email: Joi.string().min(5).max(50).required().email(),
+    password: Joi.string().min(5).max(1024).required()
+  }
+
+  return Joi.validate(user, schema)
+}
+
+// REQUEST AUTH
+function auth (req) {
+  const schema = {
+    email: Joi.string().min(5).max(50).required().email(),
+    password: Joi.string().min(5).max(1024).required()
+  }
+
+  return Joi.validate(req, schema)
 }
 
 module.exports.genre = genre
@@ -76,3 +98,7 @@ module.exports.movie = movie
 module.exports.updateMovie = updateMovie
 
 module.exports.rental = rental
+
+module.exports.user = user
+
+module.exports.auth = auth

@@ -63,12 +63,11 @@ const create = async (payload) => {
     const result = await movie.save()
     return result
   } catch (ex) {
-    return ex.message
+    return { error: true, message: ex.message }
   }
 }
 
 const update = async (id, payload) => {
-  console.log(payload)
   if (mongoose.Types.ObjectId.isValid(id) === false) {
     return { error: true, message: 'Invalid movie' }
   }

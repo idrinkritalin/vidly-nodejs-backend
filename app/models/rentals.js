@@ -80,7 +80,7 @@ const create = async (payload) => {
       .run()
     return rental
   } catch (ex) {
-    return { error: true, message: 'Something went wrong!' }
+    return { error: true, message: ex.message }
   }
 }
 

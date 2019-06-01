@@ -48,7 +48,7 @@ const create = async (payload) => {
     const result = await customer.save()
     return result
   } catch (ex) {
-    return ex.message
+    return { error: true, message: ex.message }
   }
 }
 
