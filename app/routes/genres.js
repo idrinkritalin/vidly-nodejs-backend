@@ -1,66 +1,47 @@
 const express = require('express')
 const router = express.Router()
+const genres = require('../models/genres')
 const validate = require('../helpers/dataValidation')
 
-// TEST DATA
-const dataGenres = [
-  { id: 1, name: 'Thriller' },
-  { id: 2, name: 'Romantic' },
-  { id: 3, name: 'Porn' },
-  { id: 4, name: 'Comedy' }
-]
-
 // GET
-router.get('/', (req, res) => {
-  res.send(dataGenres)
+router.get('/', async (req, res) => {
+  const request = await genres.get(req.query.sortBy)
+  res.send(request)
 })
 
-router.get('/:id', (req, res) => {
-  const genre = dataGenres.find(c => c.id === parseInt(req.params.id))
-  if (!genre) return res.status(404).send('The genre with given ID was not found')
-  res.send(genre)
+router.get('/:id', async (req, res) => {
+  const genre = await genres.getOne(req.params.id)
+  genre.error ? res.status(400).send(genre.message) : res.send(genre)
 })
 
 // POST
-router.post('/', (req, res) => {
-  const result = validate.genre(req.body)
+router.post('/', async (req, res) => {
+  const request = validate.genre(req.body)
+  if (request.error !== null) return res.status(400).send(request.error.details[0].message)
 
-  // 400 Bad Request
-  if (result.error !== null) return res.status(400).send(result.error.details[0].message)
-
-  // 200 OK Request
-  const lastItem = dataGenres[dataGenres.length - 1]
   const genre = {
-    id: lastItem.id + 1,
-    name: req.body.name
+    name: req.body.name,
+    isRated: req.body.isRated
   }
-  dataGenres.push(genre)
-  res.send(genre)
+
+  const result = await genres.create(genre)
+  res.send(result)
 })
 
 // PUT
-router.put('/:id', (req, res) => {
-  const genre = dataGenres.find(c => c.id === parseInt(req.params.id))
-  if (!genre) return res.status(404).send('The genre with given ID was not found')
+router.put('/:id', async (req, res) => {
+  const request = validate.updateGenre(req.body)
+  if (request.error !== null) return res.status(400).send(request.error.details[0].message)
 
-  const result = validate.genre(req.body)
-
-  // 400 Bad Request
-  if (result.error !== null) return res.status(400).send(result.error.details[0].message)
-
-  // 200 OK Request
-  genre.name = req.body.name
-  res.send(genre)
+  const genre = await genres.update(req.params.id, req.body)
+  genre.error ? res.status(400).send(genre.message) : res.send(genre)
 })
 
 // DELETE
-router.delete('/:id', (req, res) => {
-  const genre = dataGenres.find(c => c.id === parseInt(req.params.id))
+router.delete('/:id', async (req, res) => {
+  const genre = await genres.del(req.params.id)
   if (!genre) return res.status(404).send('The genre with given ID was not found')
 
-  // 200 OK Request
-  const index = dataGenres.indexOf(genre)
-  dataGenres.splice(index, 1)
   res.send(genre)
 })
 
